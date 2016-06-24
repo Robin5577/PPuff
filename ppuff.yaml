@@ -1,0 +1,9 @@
+zkServers: 
+     - 10.30.6.180:2181
+     - 10.30.6.180:2181
+zkTimeout: 10
+zkNodes: 
+     - /mirror
+     - /test01
+zkLogPath: ./logs
+zkRootPath: ./data

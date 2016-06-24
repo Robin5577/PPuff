@@ -9,7 +9,7 @@ import (
 var zkConn *zk.Conn
 
 func ZkInit() {
-	zkconn, zkevent, zkerror := zk.Connect(ZkSevs, ZkTimeout)
+	zkconn, zkevent, zkerror := zk.Connect(ZKConf.ZkSevs, time.Duration(ZKConf.ZkTimeout)*time.Second)
 
 	if zkerror != nil {
 		panic(zkerror)
@@ -18,21 +18,25 @@ func ZkInit() {
 	zkconn.SetLogger(ZkLoger)
 	zkConn = zkconn
 
-	for _, node := range ZkNodes {
+	for _, node := range ZKConf.ZkNodes {
 		go zkChWatch(node)
 	}
-	//go func() {
-	for {
-		select {
-		case ch := <-zkevent:
-			if ch.State == zk.StateExpired {
-				ZkLoger.Printf("%+v", ch)
-			} else {
-				ZkLoger.Printf("%+v", ch)
+	go func() {
+		for {
+			select {
+			case ch := <-zkevent:
+				if ch.State == zk.StateExpired {
+					ZkLoger.Printf("%+v", ch)
+				} else {
+					ZkLoger.Printf("%+v", ch)
+				}
 			}
 		}
-	}
-	//}()
+	}()
+}
+
+func ZKDes() {
+	zkConn.Close()
 }
 
 func zkChWatch(path string) {

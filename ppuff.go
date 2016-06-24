@@ -1,27 +1,41 @@
 package main
 
 import (
-	//"fmt"
-	"time"
+	"flag"
+	"os"
 )
 
-var ZkSevs = []string{""}
-var ZkTimeout = time.Second * 10
-var ZkNodes = []string{"/mirror", "/test01"}
-var ZkDebug = false
-var ZkLogPath = ".\\b\\a\\log"
-var ZKRootPath = ""
-
+var ZkConfPath string
+var ZkDebug bool
 var ZkLoger *ZkLog
 
 func main() {
 
 	/*defer func() {
 		if err := recover(); err != nil {
-			fmt.Errorf("%s\n", err.(error).Error())
+			ZkLoger.PrintLog("%+v", err)
 		}
 	}()*/
+
+	initialize()
+}
+
+func initialize() {
+
+	flag.BoolVar(&ZkDebug, "debug", false, "debug mode ?")
+	flag.StringVar(&ZkConfPath, "conf", "./ppuff.yaml", "the config file is ...")
+
+	flag.Parse()
+
+	if !ZkDebug {
+		Daemon()
+		os.Exit(0)
+	}
+
+	ParseConf()
 	ZkLoger = logSe()
 	ZkInit()
+	ZkLoger.PrintLog("%s", "The Ppuff starting ...")
+	SetSignal()
 }
 

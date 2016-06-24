@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"sync"
+	"time"
 )
 
 const (
@@ -34,7 +36,8 @@ func (b *logBuffer) Write(p []byte) (n int, err error) {
 	if ZkDebug {
 		fmt.Println("\033[40;32m" + string(buf) + "\033[0m")
 	} else {
-		zkf.PutAppend(ZkLogPath, buf)
+		y, m, d := time.Now().Date()
+		zkf.PutAppend(ZKConf.ZkLogPath+string(os.PathSeparator)+fmt.Sprintf("%04d%02d%02d", y, m, d), buf)
 	}
 	logPush(buf)
 	return

@@ -10,6 +10,7 @@ type ZkF struct {
 }
 
 func (zkf *ZkF) PutAppend(name string, b []byte) {
+
 	fd, err := os.OpenFile(name, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_SYNC, 0664)
 
 	if err != nil {
@@ -59,10 +60,10 @@ func (zkf *ZkF) mkdir(name string) {
 
 func (zkf *ZkF) write(b []byte) {
 
+	defer zkf.fd.Close()
+
 	if _, err := zkf.fd.Write(b); err != nil {
-		zkf.fd.Close()
 		//panic(err)
 	}
-	zkf.fd.Close()
 }
 
