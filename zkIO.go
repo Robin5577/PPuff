@@ -30,7 +30,7 @@ func (zkf *ZkF) PutAppend(name string, b []byte) {
 }
 
 func (zkf *ZkF) Put(name string, b []byte) {
-	fd, err := os.OpenFile(name, os.O_CREATE|os.O_RDWR|os.O_SYNC, 0664)
+	fd, err := os.OpenFile(name, os.O_CREATE|os.O_RDWR|os.O_SYNC|os.O_TRUNC, 0664)
 
 	if err != nil {
 		if os.IsPermission(err) {
@@ -39,11 +39,12 @@ func (zkf *ZkF) Put(name string, b []byte) {
 		if os.IsNotExist(err) {
 			zkf.mkdir(name)
 		}
-		fd, err = os.OpenFile(name, os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_SYNC, 0664)
+		fd, err = os.OpenFile(name, os.O_CREATE|os.O_RDWR|os.O_SYNC|os.O_TRUNC, 0664)
 		if err != nil {
 			panic(err)
 		}
 	}
+
 	zkf.fd = fd
 	zkf.write(b)
 }
@@ -61,9 +62,9 @@ func (zkf *ZkF) mkdir(name string) {
 func (zkf *ZkF) write(b []byte) {
 
 	defer zkf.fd.Close()
-
+	
 	if _, err := zkf.fd.Write(b); err != nil {
-		//panic(err)
+		panic(err)
 	}
 }
 
