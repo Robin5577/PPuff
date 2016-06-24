@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+var putData *ZkF = &ZkF{}
 var zkConn *zk.Conn
 
 func ZkInit() {
@@ -101,6 +102,7 @@ func zkNodeWatch(path string, nodeWatcher chan string) {
 			continue
 		}
 
+		putData.Put(ZKConf.ZkRootPath+path, node);
 		ZkLoger.Printf("The node info: %s", node)
 
 		select {

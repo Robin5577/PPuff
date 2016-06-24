@@ -57,6 +57,9 @@ func SetSignal() {
 }
 
 func ShutDown() {
+	if err := recover(); err != nil {
+		ZkLoger.PrintLog("%+v", err)
+	}
 	ZKDes()
 }
 

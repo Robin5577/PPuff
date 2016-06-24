@@ -11,11 +11,7 @@ var ZkLoger *ZkLog
 
 func main() {
 
-	/*defer func() {
-		if err := recover(); err != nil {
-			ZkLoger.PrintLog("%+v", err)
-		}
-	}()*/
+	defer ShutDown()
 
 	initialize()
 }
@@ -27,7 +23,7 @@ func initialize() {
 
 	flag.Parse()
 
-	if !ZkDebug {
+	if os.Getppid() != 1 && !ZkDebug {
 		Daemon()
 		os.Exit(0)
 	}
