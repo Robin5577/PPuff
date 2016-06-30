@@ -23,15 +23,15 @@ func initialize() {
 
 	flag.Parse()
 
+	ParseConf()
+
 	if os.Getppid() != 1 && !ZkDebug {
 		Daemon()
 		os.Exit(0)
 	}
 
-	ParseConf()
 	ZkLoger = logSe()
 	ZkInit()
 	ZkLoger.PrintLog("%s", "The Ppuff starting ...")
 	SetSignal()
 }
-

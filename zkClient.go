@@ -8,6 +8,7 @@ import (
 
 var putData *ZkF = &ZkF{}
 var zkConn *zk.Conn
+var zkInitState = false
 
 func ZkInit() {
 	zkconn, zkevent, zkerror := zk.Connect(ZKConf.ZkSevs, time.Duration(ZKConf.ZkTimeout)*time.Second)
@@ -22,12 +23,18 @@ func ZkInit() {
 	for _, node := range ZKConf.ZkNodes {
 		go zkChWatch(node)
 	}
+
 	go func() {
 		for {
 			select {
 			case ch := <-zkevent:
-				if ch.State == zk.StateExpired {
-					ZkLoger.Printf("%+v", ch)
+				if ch.State == zk.StateConnected {
+					if zkInitState {
+						ZkLoger.Printf("=====%s=======", "Reconnect")
+						zkConn.ClearWatches()
+					} else {
+						zkInitState = true
+					}
 				} else {
 					ZkLoger.Printf("%+v", ch)
 				}
@@ -48,7 +55,11 @@ func zkChWatch(path string) {
 		nodes, _, watch, err := zkConn.ChildrenW(path)
 
 		if err != nil {
-			ZkLoger.PrintLog("The child: %s,the error msg: %+v", path, err)
+			if err == zk.ErrNoServer {
+				ZkLoger.PrintLog("=====ErrConnectionClosed========: %s,the error msg: %+v", path, err)
+				continue
+			}
+			ZkLoger.PrintLog("Thr child: %s,the error msg: %+v", path, err)
 			return
 		}
 
@@ -102,7 +113,7 @@ func zkNodeWatch(path string, nodeWatcher chan string) {
 			continue
 		}
 
-		putData.Put(ZKConf.ZkRootPath+path, node);
+		putData.Put(ZKConf.ZkRootPath+path, node)
 		ZkLoger.Printf("The node info: %s", node)
 
 		select {
@@ -110,4 +121,3 @@ func zkNodeWatch(path string, nodeWatcher chan string) {
 		}
 	}
 }
-
