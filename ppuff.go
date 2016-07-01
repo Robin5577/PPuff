@@ -10,8 +10,9 @@ var ZkDebug bool
 var ZkLoger *ZkLog
 
 func main() {
-
 	defer ShutDown()
+
+	Listen()
 
 	initialize()
 }
