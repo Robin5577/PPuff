@@ -6,6 +6,7 @@ import (
 )
 
 type ZkC struct {
+	ListenPort string   `yaml:"listenPort"`
 	ZkSevs     []string `yaml:"zkServers,flow"`
 	ZkTimeout  int      `yaml:"zkTimeout"`
 	ZkNodes    []string `yaml:"zkNodes,flow"`
@@ -13,13 +14,7 @@ type ZkC struct {
 	ZkRootPath string   `yaml:"zkRootPath"`
 }
 
-var ZKConf *ZkC = &ZkC{[]string{}, 10, []string{}, "./ppuff.log", "./"}
-
-/*var ZkSevs = []string{"10.30.6.180:2181"}
-var ZkTimeout = time.Second * 10
-var ZkNodes = []string{"/test"}
-var ZkLogPath = "./ppuff.log"
-var ZKRootPath = "./"*/
+var ZKConf *ZkC = &ZkC{"127.0.0.1:8899", []string{}, 10, []string{}, "./ppuff.log", "./"}
 
 func ParseConf() {
 	f, err := os.Open(ZkConfPath)
@@ -39,4 +34,3 @@ func ParseConf() {
 		panic(err)
 	}
 }
-

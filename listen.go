@@ -6,8 +6,8 @@ import (
 )
 
 func Listen() {
-	http.HandleFunc("/", heartbeat)      //设定访问的路径
-	go http.ListenAndServe(":8899", nil) //设定端口和handler
+	http.HandleFunc("/", heartbeat)                //设定访问的路径
+	go http.ListenAndServe(ZKConf.ListenPort, nil) //设定端口和handler
 }
 
 func heartbeat(rw http.ResponseWriter, req *http.Request) {
